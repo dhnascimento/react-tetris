@@ -1,8 +1,19 @@
-import logo from './logo.svg';
+import { useState, useEffect } from 'react';
 import _ from 'lodash';
 import './App.css';
 
 function App() {
+
+  const [count, setCount] = useState(0);
+  const [brickPosition, setBrickPosition] = useState({ row: 0, column: 0 });
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (brickPosition.row <= rows[rows.length - 1] + 1) {
+        setBrickPosition({ ...brickPosition, row: brickPosition.row + 1 });
+      }
+    }, 2000);
+  });
 
   const rows = _.range(0, 10);
   const columns = _.range(0, 10);
@@ -36,7 +47,11 @@ function App() {
                 {
                   columns.map(column => {
                     return (
-                      <div key={`row-${row}-column-${column}`}>
+                      <div key={`row-${row}-column-${column}`}
+                        style={{
+                          backgroundColor: brickPosition.row === row && brickPosition.column === column ? 'blue' : ''
+                        }}
+                      >
                         {row}{column}
                       </div>
                     )
