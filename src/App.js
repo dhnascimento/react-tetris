@@ -6,10 +6,10 @@ function App() {
 
   const [brickPosition, setBrickPosition] = useState({ row: 0, column: 0 });
   const [usedPositions, setUsedPositions] = useState([]);
-  const [startingColumn, setStartingColumn] = useState(0);
 
-  const rows = _.range(0, 10);
-  const columns = _.range(0, 10);
+  const rows = _.range(0, 4);
+  const columns = _.range(0, 4);
+  const maxPositions = rows.length * columns.length;
   const lastRow = rows[rows.length - 1];
   const lastColumn = columns[columns.length - 1];
 
@@ -19,16 +19,19 @@ function App() {
 
   useEffect(() => {
     setTimeout(() => {
+      if (usedPositions.length === maxPositions) return;
       if (brickPosition.row < lastRow) {
         setBrickPosition({ ...brickPosition, row: brickPosition.row + 1 });
       }
-      if (brickPosition.row === lastRow) {
+      if (brickPosition.row === lastRow || (isPositionUsed(brickPosition.row + 1, brickPosition.column) && usedPositions.length > 0)) {
         setUsedPositions([...usedPositions, [brickPosition.row, brickPosition.column]]);
-        setBrickPosition({ ...brickPosition, row: 0, column: startingColumn + 1 });
-        setStartingColumn(startingColumn + 1);
-        if (startingColumn > lastColumn) setStartingColumn(0);
+        if (brickPosition.column + 1 > lastColumn) {
+          setBrickPosition({ ...brickPosition, row: 0, column: 0 });
+        } else {
+          setBrickPosition({ ...brickPosition, row: 0, column: brickPosition.column + 1 });
+        }
       }
-    }, 1000);
+    }, 100);
   });
 
   return (
@@ -40,7 +43,7 @@ function App() {
       alignItems: 'center',
       marginTop: '2rem'
     }}>
-      <h1>Tetris Game!</h1>
+      <h1>{usedPositions.length === maxPositions ? 'Game Over!' : 'Tetris Game!'}</h1>
       <div style={{
         border: '2px solid #DDD',
         borderRadius: '20px',
